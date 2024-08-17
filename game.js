@@ -466,7 +466,7 @@ window.addEventListener("touchstart",()=>{
 
 function changesizeframe(scaleX,scaleY){
 
-    document.getElementsByClassName("game")[0].style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
+    document.getElementsByClassName("game")[0].style.transform = `translate(-50%,-50%) scaleX(${scaleX}) scaleY(${scaleY})  `
 }
 setInterval(()=>{
     let scaleX = (window.innerWidth ) / (scale * width ) 

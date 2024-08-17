@@ -463,20 +463,20 @@ function createKeyframes(game) {
 
 let game = new GameRunner(keys)
 
-// window.addEventListener("keydown",(e)=> {
+window.addEventListener("keydown",(e)=> {
 
-//     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
-//         keys.arrowup = false
-//         game.start()
-//     }
-//     })
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
+    })
 
-// window.addEventListener("touchstart",()=>{
-//     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
-//         keys.arrowup = false
-//         game.start()
-//     }
-// })
+window.addEventListener("touchstart",()=>{
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
+})
 
 
 

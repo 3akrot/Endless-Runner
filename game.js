@@ -460,7 +460,7 @@ window.addEventListener("keydown",(e)=> {
 
 function respnosive(game){
     let scaleX = window.innerWidth / (scale * width) 
-    game.olddisplay.changesizeframe(scaleX,scaleX)
+    game.olddisplay.changesizeframe(scaleX,scaleX/1.2)
     createKeyframes(game.game)
 }
 window.addEventListener("resize",()=>{

@@ -235,7 +235,7 @@ class GameRunner{
              this.olddisplay = this.game.display
             }
         if(this.lasttime){
-            let frametime = Math.min(time - this.lasttime,50) / 1000
+            let frametime =1/60
             if(this.game.state == "lost"){
                 this.game.update(frametime,this.keys)
                 this.highestscore = Math.max(this.game.score,this.highestscore)

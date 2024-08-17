@@ -224,10 +224,10 @@ class GameRunner{
     start(){
         if(!this.running)
             this.run()
-            respnosive(this)
         
     }
     run(time){
+        
         this.running = true;
         if(!this.game){
              this.game = Game.newgame(this.highestscore)
@@ -466,18 +466,20 @@ window.addEventListener("touchstart",()=>{
 })
 function respnosive(game){
     // width*scale x = windowwidth - 0.1
-    let scaleX = (window.innerWidth ) / (scale * width ) 
+    // console.log("w",document.documentElement.clientWidth )
+    let scaleX = (document.documentElement.clientWidth ) / (scale * width ) 
     game.olddisplay.changesizeframe(scaleX,scaleX)
     createKeyframes(game.game)
 }
-// window.addEventListener("resize",()=>{
-//     respnosive(game)
-
-// })
-// window.addEventListener("orientationchange",()=>{
-//     respnosive(game)
-// })
-
-setInterval(()=>{
+window.addEventListener("resize",()=>{
     respnosive(game)
-},500)
+
+})
+window.addEventListener("orientationchange",()=>{
+    respnosive(game)
+})
+
+
+// setTimeout(()=>{
+
+// },300)

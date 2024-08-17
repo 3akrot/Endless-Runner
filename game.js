@@ -11,6 +11,7 @@ let height = 22
 
 
 const keys = trackkey()
+// if(wi)
 
 Array.prototype.last = function(){
     return this[this.length - 1]
@@ -132,8 +133,7 @@ function trackkey(){
             }
         
     })
-    window.addEventListener("touchstart",(e)=>{
-
+    window.addEventListener("touchstart",()=>{
         keys["arrowup"] = true;
     })
     window.addEventListener("touchend",()=>{
@@ -210,6 +210,7 @@ class GameRunner{
         this.game.update(1/60,keys)
         this.olddisplay = this.game.display
         this.idleanimation(this.game)
+        respnosive(this)
 
     }
     idleanimation(game){
@@ -224,10 +225,10 @@ class GameRunner{
     start(){
         if(!this.running)
             this.run()
+            respnosive(this)
         
     }
     run(time){
-        
         this.running = true;
         if(!this.game){
              this.game = Game.newgame(this.highestscore)
@@ -235,7 +236,7 @@ class GameRunner{
              this.olddisplay = this.game.display
             }
         if(this.lasttime){
-            let frametime =1/60
+            let frametime = Math.min(time - this.lasttime,50) / 1000
             if(this.game.state == "lost"){
                 this.game.update(frametime,this.keys)
                 this.highestscore = Math.max(this.game.score,this.highestscore)
@@ -278,9 +279,6 @@ class Display{
         this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
         this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
         this.frame.appendChild(this.actors)
-        createKeyframes(this.game)
-
-        
     }
 
     clear(){
@@ -296,7 +294,11 @@ class Display{
         }
         return actorselemtns
     }
-
+    changesizeframe(scaleX,scaleY){
+        //Xframewidrh = newwidth
+        //x = newwidth / frame
+        this.frame.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
+    }
     
 }
 
@@ -451,7 +453,6 @@ function createKeyframes(game) {
 let game = new GameRunner(keys)
 
 window.addEventListener("keydown",(e)=> {
-
     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
         keys.arrowup = false
         game.start()
@@ -464,13 +465,6 @@ window.addEventListener("touchstart",()=>{
     }
 })
 
-<<<<<<< HEAD
-window.addEventListener("touchstart",()=>{
-    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
-        keys.arrowup = false
-        game.start()
-    }
-=======
 
 function respnosive(game){
     let scaleX = document.documentElement.clientWidth / (scale * width) 
@@ -480,25 +474,9 @@ function respnosive(game){
 window.addEventListener("resize",()=>{
     respnosive(game)
 
->>>>>>> a-new-start
 })
 
-function changesizeframe(scaleX,scaleY){
 
-<<<<<<< HEAD
-    document.getElementsByClassName("game")[0].style.transform = ` scaleX(${scaleX}) scaleY(${scaleY})  `
-}
-setInterval(()=>{
-    let scaleX = (window.innerWidth ) / (scale * width ) 
-    changesizeframe(scaleX,scaleX)
-},300)
-
-
-// setTimeout(()=>{
-
-// },300)
-=======
 // setInterval(()=>{
 //     console.log(window.innerWidth)
 // },500)
->>>>>>> a-new-start

@@ -244,6 +244,7 @@ class GameRunner{
                 this.lasttime = null
                 Obstacle.prototype.speed = new Vector(-14,0)
                 this.running = false;
+            
 
                 return
             }
@@ -456,7 +457,6 @@ window.addEventListener("keydown",(e)=> {
         game.start()
     }
     })
-
 window.addEventListener("touchstart",()=>{
     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
         keys.arrowup = false
@@ -464,8 +464,28 @@ window.addEventListener("touchstart",()=>{
     }
 })
 
+<<<<<<< HEAD
+window.addEventListener("touchstart",()=>{
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
+=======
+
+function respnosive(game){
+    let scaleX = document.documentElement.clientWidth / (scale * width) 
+    game.olddisplay.changesizeframe(scaleX,scaleX)
+    createKeyframes(game.game)
+}
+window.addEventListener("resize",()=>{
+    respnosive(game)
+
+>>>>>>> a-new-start
+})
+
 function changesizeframe(scaleX,scaleY){
 
+<<<<<<< HEAD
     document.getElementsByClassName("game")[0].style.transform = ` scaleX(${scaleX}) scaleY(${scaleY})  `
 }
 setInterval(()=>{
@@ -477,3 +497,8 @@ setInterval(()=>{
 // setTimeout(()=>{
 
 // },300)
+=======
+// setInterval(()=>{
+//     console.log(window.innerWidth)
+// },500)
+>>>>>>> a-new-start

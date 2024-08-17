@@ -209,7 +209,6 @@ class GameRunner{
         this.game.update(1/60,keys)
         this.olddisplay = this.game.display
         this.idleanimation(this.game)
-        respnosive(this)
 
     }
     idleanimation(game){
@@ -266,6 +265,7 @@ class Display{
         this.frametracker = new FrameTracker(game.scale)
         this.frametracker.add("obstaclemid",Skelton.prototype.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
         this.actors = null
+        this.interval = null
         this.score = makeelment("div",{"class":"score"})
         this.frame = makeelment("div",{"style":`width:${game.width * game.scale}px;height:${game.height * game.scale}px`,"class":`game`},[this.score])
         document.body.appendChild(this.frame)
@@ -277,9 +277,21 @@ class Display{
         this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
         this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
         this.frame.appendChild(this.actors)
+        let scaleX = (window.innerWidth ) / (scale * width ) 
+        this.changesizeframe(scaleX,scaleX)
+        createKeyframes(this.game)
+        if(!this.interval){
+            this.interval = setInterval(()=>{
+                let scaleX = (window.innerWidth ) / (scale * width ) 
+                this.changesizeframe(scaleX,scaleX)
+                createKeyframes(this.game)
+            },100)
+
+        }
     }
 
     clear(){
+        clearInterval(this.interval)
         this.frame.remove()
     }
 
@@ -464,20 +476,7 @@ window.addEventListener("touchstart",()=>{
         game.start()
     }
 })
-function respnosive(game){
-    // width*scale x = windowwidth - 0.1
-    // console.log("w",document.documentElement.clientWidth )
-    let scaleX = (document.documentElement.clientWidth ) / (scale * width ) 
-    game.olddisplay.changesizeframe(scaleX,scaleX)
-    createKeyframes(game.game)
-}
-window.addEventListener("resize",()=>{
-    respnosive(game)
 
-})
-window.addEventListener("orientationchange",()=>{
-    respnosive(game)
-})
 
 
 // setTimeout(()=>{

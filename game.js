@@ -290,6 +290,9 @@ class Display{
         let actorselemtns = []
         for(let actor of actors){
             let element = makeelment("div",{"style":`top:${actor.postionVector.y * this.game.scale}px;left:${actor.postionVector.x * this.game.scale}px;width:${actor.size.x * this.game.scale}px;height:${actor.size.y * this.game.scale}px;transform:scale(${drawingscale})`,"class":`actor ${actor.type} ${actor.type == "player" ? actor.state : ""}`})
+            if(actor.postionVector.x * this.game.scale > this.game.width * this.game.scale ){
+                element.style.display = "none"
+            }
             actorselemtns.push(element)
             actor.frames.update(element,actor.state,actor)
         }
@@ -465,13 +468,27 @@ window.addEventListener("touchstart",()=>{
 })
 
 function changesizeframe(scaleX,scaleY){
-
+    console.log(document.getElementsByClassName("game")[0])
     document.getElementsByClassName("game")[0].style.transform = ` scaleX(${scaleX}) scaleY(${scaleY})  `
 }
+let t = false
 setInterval(()=>{
-    let scaleX = (window.innerWidth ) / (scale * width ) 
+    let scaleX = (document.documentElement.clientWidth ) / (scale * width ) 
+    if(document.getElementsByClassName("lost")[0]){
+    let ew = Number(document.getElementsByClassName("game")[0].style.width.slice(0,-2))
+    setTimeout(()=>{
+        
+        document.getElementsByClassName("game")[0].style.overflow = "hidden"
+
+    },40)
+    document.getElementsByClassName("game")[0].style.overflow = "visible"
+
+
+    }
+
+
     changesizeframe(scaleX,scaleX)
-},300)
+},50)
 
 
 // setTimeout(()=>{

@@ -466,18 +466,18 @@ window.addEventListener("touchstart",()=>{
 })
 function respnosive(game){
     // width*scale x = windowwidth - 0.1
-    let scaleX = (window.innerWidth - (window.innerWidth * 0.3 )) / (scale * width ) 
+    let scaleX = (window.innerWidth ) / (scale * width ) 
     game.olddisplay.changesizeframe(scaleX,scaleX)
     createKeyframes(game.game)
 }
-window.addEventListener("resize",()=>{
-    respnosive(game)
+// window.addEventListener("resize",()=>{
+//     respnosive(game)
 
-})
-window.addEventListener("orientationchange",()=>{
-    respnosive(game)
-})
+// })
+// window.addEventListener("orientationchange",()=>{
+//     respnosive(game)
+// })
 
-// setInterval(()=>{
-//     console.log(window.innerWidth)
-// },500)
+setInterval(()=>{
+    respnosive(game)
+},500)

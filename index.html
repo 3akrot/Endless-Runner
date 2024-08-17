@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        body {
+            background-color: midnightblue;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game {
+            transition: 0.5s;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid ;
+            /* max-height: 100vh; */
+        }
+        .game.lost {
+            background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
+            background-position: 0px bottom;
+            background-repeat: repeat-x;  
+            background-size: cover;
+        }
+
+        .game.idle {
+            background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
+            background-position: 0px bottom;
+            background-repeat: repeat-x;  
+            background-size: cover;
+      
+        }
+        .game.playing{
+            background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
+            background-position:0px bottom;
+            background-repeat: repeat-x; 
+            background-size: cover;
+            animation: gamebg 10s  linear infinite;
+        }
+
+        .score {
+            font-family: Arial, Helvetica, sans-serif;
+            position: absolute;
+            width: 97%;
+            font-size: 6px;
+            color: white;
+            text-align: right;
+            top: 5px;
+        }
+        .actor {
+            position: absolute;
+        }
+
+
+
+
+        
+
+    </style>
+</head>
+<body>
+    <script src="./game.js">
+
+        
+    </script>
+</body>
+</html>

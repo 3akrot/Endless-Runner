@@ -11,7 +11,6 @@ let height = 22
 
 
 const keys = trackkey()
-// if(wi)
 
 Array.prototype.last = function(){
     return this[this.length - 1]
@@ -468,7 +467,9 @@ window.addEventListener("resize",()=>{
     respnosive(game)
 
 })
-
+window.addEventListener("orientationchange",()=>{
+    respnosive(game)
+})
 
 // setInterval(()=>{
 //     console.log(window.innerWidth)

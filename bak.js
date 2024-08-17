@@ -11,7 +11,6 @@ let height = 22
 
 
 const keys = trackkey()
-// if(wi)
 
 Array.prototype.last = function(){
     return this[this.length - 1]
@@ -210,7 +209,6 @@ class GameRunner{
         this.game.update(1/60,keys)
         this.olddisplay = this.game.display
         this.idleanimation(this.game)
-        respnosive(this)
 
     }
     idleanimation(game){
@@ -225,10 +223,10 @@ class GameRunner{
     start(){
         if(!this.running)
             this.run()
-            respnosive(this)
         
     }
     run(time){
+        
         this.running = true;
         if(!this.game){
              this.game = Game.newgame(this.highestscore)
@@ -236,7 +234,7 @@ class GameRunner{
              this.olddisplay = this.game.display
             }
         if(this.lasttime){
-            let frametime = Math.min(time - this.lasttime,50) / 1000
+            let frametime =1/60
             if(this.game.state == "lost"){
                 this.game.update(frametime,this.keys)
                 this.highestscore = Math.max(this.game.score,this.highestscore)
@@ -267,6 +265,7 @@ class Display{
         this.frametracker = new FrameTracker(game.scale)
         this.frametracker.add("obstaclemid",Skelton.prototype.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
         this.actors = null
+        this.interval = null
         this.score = makeelment("div",{"class":"score"})
         this.frame = makeelment("div",{"style":`width:${game.width * game.scale}px;height:${game.height * game.scale}px`,"class":`game`},[this.score])
         document.body.appendChild(this.frame)
@@ -278,9 +277,21 @@ class Display{
         this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
         this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
         this.frame.appendChild(this.actors)
+        let scaleX = (window.innerWidth ) / (scale * width ) 
+        this.changesizeframe(scaleX,scaleX)
+        createKeyframes(this.game)
+        if(!this.interval){
+            this.interval = setInterval(()=>{
+                let scaleX = (window.innerWidth ) / (scale * width ) 
+                this.changesizeframe(scaleX,scaleX)
+                createKeyframes(this.game)
+            },100)
+
+        }
     }
 
     clear(){
+        clearInterval(this.interval)
         this.frame.remove()
     }
 
@@ -452,24 +463,22 @@ function createKeyframes(game) {
 let game = new GameRunner(keys)
 
 window.addEventListener("keydown",(e)=> {
+
     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
         keys.arrowup = false
         game.start()
     }
     })
 
-
-function respnosive(game){
-    let scaleX = window.innerWidth / (scale * width) 
-    game.olddisplay.changesizeframe(scaleX,scaleX)
-    createKeyframes(game.game)
-}
-window.addEventListener("resize",()=>{
-    respnosive(game)
-
+window.addEventListener("touchstart",()=>{
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
 })
 
 
-// setInterval(()=>{
-//     console.log(window.innerWidth)
-// },500)
+
+// setTimeout(()=>{
+
+// },300)

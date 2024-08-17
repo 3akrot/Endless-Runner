@@ -451,16 +451,23 @@ function createKeyframes(game) {
 let game = new GameRunner(keys)
 
 window.addEventListener("keydown",(e)=> {
+
     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
         keys.arrowup = false
         game.start()
     }
     })
 
-
+window.addEventListener("touchstart",()=>{
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
+})
 function respnosive(game){
-    let scaleX = window.innerWidth / (scale * width) 
-    game.olddisplay.changesizeframe(scaleX,scaleX/1.2)
+    // width*scale x = windowwidth - 0.1
+    let scaleX = (window.innerWidth - (window.innerWidth * 0.3 )) / (scale * width ) 
+    game.olddisplay.changesizeframe(scaleX,scaleX)
     createKeyframes(game.game)
 }
 window.addEventListener("resize",()=>{

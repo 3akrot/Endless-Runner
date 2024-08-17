@@ -132,7 +132,8 @@ function trackkey(){
             }
         
     })
-    window.addEventListener("touchstart",()=>{
+    window.addEventListener("touchstart",(e)=>{
+
         keys["arrowup"] = true;
     })
     window.addEventListener("touchend",()=>{
@@ -265,6 +266,7 @@ class Display{
         this.frametracker = new FrameTracker(game.scale)
         this.frametracker.add("obstaclemid",Skelton.prototype.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
         this.actors = null
+        this.interval = null
         this.score = makeelment("div",{"class":"score"})
         this.frame = makeelment("div",{"style":`width:${game.width * game.scale}px;height:${game.height * game.scale}px`,"class":`game`},[this.score])
         document.body.appendChild(this.frame)
@@ -276,11 +278,21 @@ class Display{
         this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
         this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
         this.frame.appendChild(this.actors)
+        let scaleX = (window.innerWidth ) / (scale * width ) 
+        this.changesizeframe(scaleX,scaleX)
         createKeyframes(this.game)
+        if(!this.interval){
+            this.interval = setInterval(()=>{
+                let scaleX = (window.innerWidth ) / (scale * width ) 
+                this.changesizeframe(scaleX,scaleX)
+                createKeyframes(this.game)
+            },100)
 
+        }
     }
 
     clear(){
+        clearInterval(this.interval)
         this.frame.remove()
     }
 
@@ -451,20 +463,20 @@ function createKeyframes(game) {
 
 let game = new GameRunner(keys)
 
-window.addEventListener("keydown",(e)=> {
+// window.addEventListener("keydown",(e)=> {
 
-    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
-        keys.arrowup = false
-        game.start()
-    }
-    })
+//     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+//         keys.arrowup = false
+//         game.start()
+//     }
+//     })
 
-window.addEventListener("touchstart",()=>{
-    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
-        keys.arrowup = false
-        game.start()
-    }
-})
+// window.addEventListener("touchstart",()=>{
+//     if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+//         keys.arrowup = false
+//         game.start()
+//     }
+// })
 
 
 

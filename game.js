@@ -210,7 +210,7 @@ class GameRunner{
         this.game.update(1/60,keys)
         this.olddisplay = this.game.display
         this.idleanimation(this.game)
-        respnosive(this)
+        respnosive(this,true)
 
     }
     idleanimation(game){
@@ -225,7 +225,7 @@ class GameRunner{
     start(){
         if(!this.running)
             this.run()
-            respnosive(this)
+            respnosive(this,false)
         
     }
     run(time){
@@ -443,7 +443,6 @@ function createKeyframes(game) {
             `;
             // Append the keyframes rule to the style element
             style.innerHTML = keyframes;
-            console.log(containerWidth)
             // Append the style element to the document head
             document.head.appendChild(style);
         }
@@ -466,13 +465,15 @@ window.addEventListener("touchstart",()=>{
 })
 
 
-function respnosive(game){
+function respnosive(game,smouth){
+    if(smouth) game.olddisplay.frame.style.transition = "0.5s"
+    else game.olddisplay.frame.style.transition = ""
     let scaleX = document.documentElement.clientWidth / (scale * width) 
     game.olddisplay.changesizeframe(scaleX,scaleX)
     createKeyframes(game.game)
 }
 window.addEventListener("resize",()=>{
-    respnosive(game)
+    respnosive(game,true)
 
 })
 

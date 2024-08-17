@@ -245,6 +245,7 @@ class GameRunner{
                 this.lasttime = null
                 Obstacle.prototype.speed = new Vector(-14,0)
                 this.running = false;
+            
 
                 return
             }
@@ -457,10 +458,16 @@ window.addEventListener("keydown",(e)=> {
         game.start()
     }
     })
+window.addEventListener("touchstart",()=>{
+    if(keys.arrowup && ( !game.game ||game.game.state ==  "idle")){
+        keys.arrowup = false
+        game.start()
+    }
+})
 
 
 function respnosive(game){
-    let scaleX = window.innerWidth / (scale * width) 
+    let scaleX = document.documentElement.clientWidth / (scale * width) 
     game.olddisplay.changesizeframe(scaleX,scaleX)
     createKeyframes(game.game)
 }

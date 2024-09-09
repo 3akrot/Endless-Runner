@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preload" href="./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png" as="image">
+    <!-- <link rel="preload" href="./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png" as="image">
     <link rel="preload" href="./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png" as="image">
-    <link rel="preload" href="./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png" as="image">
+    <link rel="preload" href="./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png" as="image"> -->
 
     <title>Document</title>
     <style>
@@ -31,22 +31,24 @@
             background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
             background-position: 0px bottom;
             background-repeat: repeat-x;  
-            background-size: cover;
+            background-size: 192px 160px;
+            /* animation: gamebg 2s  linear infinite forwards; */
+
         }
 
         .game.idle {
             background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
             background-position: 0px bottom;
             background-repeat: repeat-x;  
-            background-size: cover;
+            background-size: 192px 160px;
       
         }
         .game.playing{
             background-image: url("assets/craftpix-net-154389-forest-and-trees-free-pixel-backgrounds/5/2304x1296.png");
             background-position:0px bottom;
             background-repeat: repeat-x; 
-            background-size: cover;
-            animation: gamebg 10s  linear infinite;
+            background-size: 192px 160px;
+            animation: gamebg 2s  linear infinite forwards;
         }
 
         .score {
@@ -62,6 +64,11 @@
             position: absolute;
         }
 
+        @keyframes gamebg {
+            to {
+                background-position: -192px bottom;
+            }
+        }
 
 
 

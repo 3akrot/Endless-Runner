@@ -5,7 +5,9 @@ const scale = 8;
 const drawingscale = `2.5`
 let width = 50;
 // if(window.innerWidth  < 1000) width = 20
-let height = 22
+let height = 20
+let bg;
+
 // let width  = (window.innerWidth / scale) 
 // let height = (window.innerHeight / scale) - (window.innerHeight * 0.2 / scale)
 
@@ -34,6 +36,15 @@ class FrameTracker {
             anmtionframes:this.generateFrames(actorsize,framesnumber,this.scale),
             index:0,
             framesspeed
+        }
+        console.log(actorsize,framesname,framesnumber,backgroundphoto,framesspeed)
+        console.log(backgroundphoto.slice(2))
+        if(!(Array.from(document.head.getElementsByTagName("link")).find((e)=> e.href == `${window.location}${backgroundphoto.slice(2)}`))){
+            let preload = document.createElement("link")
+            preload.href = `${window.location}${backgroundphoto.slice(2)}`
+            preload.rel = "preload"
+            preload.as = "image"
+            document.head.appendChild(preload)
         }
 
     }
@@ -168,7 +179,10 @@ class Game {
         for(let obstacle of this.obstacles){
             obstacle.update(this,frametime)
             if(this.state  == "lost"){
+
+
                 this.display.sync(this)
+
                 return this.score
             }
         }
@@ -238,7 +252,6 @@ class GameRunner{
         if(this.lasttime){
             let frametime = Math.min(time - this.lasttime,50) / 1000
             if(this.game.state == "lost"){
-                this.game.update(frametime,this.keys)
                 this.highestscore = Math.max(this.game.score,this.highestscore)
                 this.olddisplay = this.game.display
                 this.game = null
@@ -266,7 +279,6 @@ class Display{
     constructor(game){
         this.game = game
         this.frametracker = new FrameTracker(game.scale)
-        this.frametracker.add("obstaclemid",Skelton.prototype.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
         this.actors = null
         this.score = makeelment("div",{"class":"score"})
         this.frame = makeelment("div",{"style":`width:${game.width * game.scale}px;height:${game.height * game.scale}px`,"class":`game`},[this.score])
@@ -274,7 +286,13 @@ class Display{
     }
 
     sync(newgame){
-        this.frame.setAttribute("class",`game ${newgame.state}`)
+        if(newgame.state != "lost")
+        bg = window.getComputedStyle(this.game.display.frame).backgroundPositionX
+        if(newgame.state == "lost")
+        this.game.display.frame.style.backgroundPositionX = bg 
+
+        this.frame.setAttribute("class",`game ${newgame.state }`)
+
         if(this.actors) this.actors.remove()
         this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
         this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
@@ -413,6 +431,7 @@ class Skelton extends Obstacle{
     constructor(speedVector,postionVector,state){
         super(speedVector,postionVector,state)
         this.frames = new FrameTracker(scale)
+        console.log(this.size , "sizehere")
         this.frames.add(this.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
         this.frames.add(this.size,"attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Attack_3.png",0.1)
     }
@@ -470,7 +489,6 @@ function respnosive(game,smouth){
     else game.olddisplay.frame.style.transition = ""
     let scaleX = document.documentElement.clientWidth / (scale * width) 
     game.olddisplay.changesizeframe(scaleX,scaleX)
-    createKeyframes(game.game)
 }
 window.addEventListener("resize",()=>{
     respnosive(game,true)

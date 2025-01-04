@@ -1,8 +1,9 @@
+// game.js
 const gravitiy = 62;
 const jump = -25;
 const GroundLevel = 2
 const scale = 8;
-const drawingscale = `2.5`
+const drawingscale = `5`
 let width = 50;
 // if(window.innerWidth  < 1000) width = 20
 let height = 20
@@ -52,8 +53,8 @@ class FrameTracker {
     generateFrames(actorsize,framesnumber,scale){
         let res = []
         for(let i = 0 ; i < framesnumber ; i++){
-            if(i==0)res.push([(actorsize.x - actorsize.y) * scale / 2,0])
-            else res.push([res[i-1][0] - actorsize.x*2 * scale,0])
+            if(i==0)res.push([(actorsize.x - actorsize.y) * scale / 2,-0.2])
+            else res.push([res[i-1][0] - actorsize.x*2 * scale,-0.2])
         }
         return res
     }
@@ -142,6 +143,14 @@ function trackkey(){
                 keys["arrowup"] = true;
                 e.preventDefault()
             }
+            if(e.key === ' '){
+                keys["space"] = true;
+                setTimeout(()=>{
+                    keys["space"] = false;
+
+                },800)
+                e.preventDefault()
+            }
         
     })
     window.addEventListener("touchstart",()=>{
@@ -154,6 +163,7 @@ function trackkey(){
         if(e.key === "ArrowUp"){
             keys["arrowup"] = false;
         }
+
     })
     return keys
 }
@@ -192,7 +202,8 @@ class Game {
     spawnobstacles(count){
         for(let i = 0 ; i < count ; i++){
             let distancebeteenobstacles = randomrange(this.width * 0.2,this.width * 2)
-            let random = [Skelton][0]
+            let random = [Skelton,Sperm,Plent][Math.floor(Math.random() * 3)]
+            console.log(random,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
             this.obstacles.push(random.create(new Vector((this.width * 1.6)  +  distancebeteenobstacles * i,this.height)))
         }
     }
@@ -334,7 +345,13 @@ class Player{
         this.frames = new FrameTracker(scale)
         this.frames.add(this.size,"idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png",0.2)
         this.frames.add(this.size, "running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png",0.25)
-        this.frames.add(this.size,"jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.2)
+        this.frames.add(this.size, "jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.25)
+
+        this.frames.add(this.size,"Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png",0.2)
+        this.frames.add(this.size,"Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png",0.2)
+        this.frames.add(this.size,"Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png",0.2)
+
+
     }
 
     get type(){
@@ -343,13 +360,14 @@ class Player{
 
     update(game,timeframe,arrowkey){
         let suggestjump = false;
+
         for(let obstacle of game.obstacles){
             if(obstacle.postionVector.x > this.postionVector.x + this.size.x && obstacle.postionVector.x - (-Obstacle.prototype.speed.x / 3.1 )< this.postionVector.x + this.size.x)
                 suggestjump = true
         }
         if (this.postionVector.y + this.size.y < game.height - GroundLevel  ){
             if(this.jumps > 0 &&  arrowkey.arrowup && !this.lastarrowup ){
-                this.speedVector.y = jump * 1.2
+                this.speedVector.y = jump + 5
                 this.jumps--;
             }
             this.state = "jumping"
@@ -359,10 +377,10 @@ class Player{
         else if(arrowkey.arrowup && this.speedVector.y >= 0){
             //if the player hit arrow up and the player is not jumping
             //we make the player jump by reversing its speed
-            this.speedVector.y = jump
+            this.speedVector.y = jump 
             this.jumps = this.allowedjumps
         }
-        //for cheaters
+        // for cheaters
         // else if(this.speedVector.y >= 0 && suggestjump){
         //     this.speedVector.y = jump
         // }
@@ -382,9 +400,15 @@ class Player{
             this.postionVector.y =  game.height - GroundLevel -this.size.y
         }
         this.lastarrowup = arrowkey.arrowup
+        if(keys.space)
+            {
+                this.state = `Attack_3`
+            }
+            console.log(this.state)
+
     }
 }
-Player.prototype.size = new Vector(1,2)
+Player.prototype.size = new Vector(0.5,1)
 
 
 class Obstacle{
@@ -413,10 +437,10 @@ class Obstacle{
             let moveX = rounddecimat(this.speedVector.x * timeframe)
             this.postionVector.x = rounddecimat(this.postionVector.x + moveX)
         }
-        //  if(this.postionVector.x - 5 < game.player.postionVector.x  + game.player.size.x&& this.postionVector.y <= game.player.postionVector.y){
-        //     this.state = "attack"
-        //     this.frames.rest("walking")
-        // }
+         if(this.postionVector.x - 10 < game.player.postionVector.x  + game.player.size.x&& this.postionVector.y <= game.player.postionVector.y && game.player.postionVector.y + game.player.size.y <= this.postionVector.y + this.size.y){
+            this.state = "attack"
+            this.frames.rest("walking")
+        }
     }
     static create(postionVector){
         postionVector.add(new Vector(0 , -(this.prototype.size.y + GroundLevel)))
@@ -440,7 +464,36 @@ class Skelton extends Obstacle{
     }
 
 }
-Skelton.prototype.size = new Vector(1,2)
+
+class Sperm extends Obstacle{
+    constructor(speedVector,postionVector,state){
+        super(speedVector,postionVector,state)
+        this.frames = new FrameTracker(scale)
+        this.frames.add(this.size,"walking",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Walk.png",0.1)
+        this.frames.add(this.size,"attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Attack.png",0.1)
+    }
+
+    static create(postionVector){
+        postionVector.add(new Vector(0 , -(this.prototype.size.y + GroundLevel + Math.floor(Math.random()* 10))))
+        return new this(this.prototype.speed,postionVector,"walking")
+    }
+
+}
+class Plent extends Obstacle{
+    constructor(speedVector,postionVector,state){
+        super(speedVector,postionVector,state)
+        this.frames = new FrameTracker(scale)
+        this.frames.add(this.size,"walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
+        this.frames.add(this.size,"attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
+    }
+
+
+}
+Sperm.prototype.size = new Vector(0.8,1.6)
+Plent.prototype.size = new Vector(0.5,1)
+
+Skelton.prototype.size = new Vector(0.5,1)
+
 
 
 function createKeyframes(game) {

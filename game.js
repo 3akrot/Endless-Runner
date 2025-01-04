@@ -5,16 +5,13 @@ const GroundLevel = 2
 const scale = 8;
 const drawingscale = `5`
 let width = 50;
-// if(window.innerWidth  < 1000) width = 20
 let height = 20
 let bg;
 
-// let width  = (window.innerWidth / scale) 
-// let height = (window.innerHeight / scale) - (window.innerHeight * 0.2 / scale)
+
 
 
 const keys = trackkey()
-// if(wi)
 
 Array.prototype.last = function(){
     return this[this.length - 1]

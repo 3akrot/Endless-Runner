@@ -1,6 +1,6 @@
-# Dino Game Clone
+# Endless Runner
 
-Welcome to the Dino Game Clone! This project is a clone of the classic Chrome Dino game, built using HTML, CSS, and JavaScript.
+Welcome to the Endless Runner! This project is a clone of the classic Chrome Dino game, built using HTML, CSS, and JavaScript.
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@ Welcome to the Dino Game Clone! This project is a clone of the classic Chrome Di
 
 ## Introduction
 
-The Dino Game Clone is a fun and engaging game where you control a character to jump over obstacles and achieve the highest score possible. The game features pixel art graphics and smooth animations.
+The Endless Runner is a fun and engaging game where you control a character to jump over obstacles and achieve the highest score possible. The game features pixel art graphics and smooth animations.
 
 ## Features
 
@@ -25,15 +25,15 @@ The Dino Game Clone is a fun and engaging game where you control a character to 
 
 ## Installation
 
-To get started with the Dino Game Clone, follow these steps:
+To get started with the Endless Runner, follow these steps:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-username/dino-game-clone.git
+    git clone https://github.com/3akrot/Endless-Runner
     ```
 2. Navigate to the project directory:
     ```sh
-    cd dino-game-clone
+    cd Endless-Runner
     ```
 3. Open `index.html` in your preferred web browser.
 

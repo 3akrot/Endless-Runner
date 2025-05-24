@@ -2,10 +2,10 @@
 const gravitiy = 62;
 const jump = -25;
 const GroundLevel = 2
-const scale = 8;
+const scale = 26;
 const drawingscale = `5`
 let width = 50;
-let height = 20
+let height = 25;
 let bg;
 
 
@@ -179,7 +179,8 @@ class Game {
         this.incrmentdiff = 30;
         this.obstaclespeed = -2;
         this.spawnrate = -(1.2 * this.width)/Obstacle.prototype.speed.x;
-        this.display = new display(this)
+        // this.display = new display(this)
+        this.display = new CavasDisplay(this)
     }
 
     updateactors(frametime,keys){
@@ -232,7 +233,7 @@ class GameRunner{
         this.game.update(1/60,keys)
         this.olddisplay = this.game.display
         this.idleanimation(this.game)
-        respnosive(this,true)
+        // respnosive(this,true)
 
     }
     idleanimation(game){
@@ -247,7 +248,7 @@ class GameRunner{
     start(){
         if(!this.running)
             this.run()
-            respnosive(this,false)
+            // respnosive(this,false)
         
     }
     run(time){
@@ -328,6 +329,64 @@ class Display{
     
 }
 
+class Frames {
+    constructor(){
+        this.animtions = {}
+    }
+    addAnimtion(animtionName,FrameNumber,src){
+        this.animtions[animtionName] = {src,currentFrame:1,FrameNumber,width:128}
+    }
+    next(animtionName){
+        let current = this.animtions[animtionName].currentFrame
+        this.animtions[animtionName].currentFrame = (current + 1) % this.animtions[animtionName].FrameNumber
+    }
+    rest(animtionName){
+        this.animtions[animtionName].currentFrame = 1
+    }
+}
+
+class CavasDisplay {
+   constructor(game){
+    this.game = game;
+    this.canves = document.createElement("canvas");
+    this.canves.width = game.width * scale;
+    this.canves.height = game.height * scale;
+    this.cx = this.canves.getContext("2d");  
+    document.body.appendChild(this.canves);
+   }
+   sync(newgame){
+        this.cx.clearRect(0,0,this.canves.width,this.canves.height)
+        this.drawActors(newgame.obstacles.concat(newgame.player))
+        this.drawScore(newgame)
+    }
+    drawScore(newgame){
+        let textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
+        this.cx.fillText(textContent,0,10);
+
+    }
+   drawActor(actor){
+    this.cx.resetTransform()
+    let currentFrame = actor.frames.animtions[actor.state].currentFrame
+    let frameWidth = actor.frames.animtions[actor.state].width
+    let src = actor.frames.animtions[actor.state].src
+    let img = document.createElement("img")
+    img.src = src
+    // this.cx.scale(2,2)
+    this.cx.fillRect(actor.postionVector.x * scale,actor.postionVector.y * scale,actor.size.x * scale,actor.size.y*scale)
+    // this.cx.drawImage(img,currentFrame * frameWidth ,0,frameWidth,128,actor.postionVector.x * scale, actor.postionVector.y * scale,actor.size.x * scale , actor.size.y * scale)
+   }
+   drawActors(actors){
+    for(let actor of actors){
+        this.drawActor(actor)
+    }
+    }
+    changesizeframe(scaleX,scaleY){
+        //Xframewidrh = newwidth
+        //x = newwidth / frame
+        // this.canves.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
+    }
+}
+
 
 class Player{
     constructor(speedVector,postionVector,state){
@@ -339,14 +398,23 @@ class Player{
         this.jumps = this.allowedjumps;
         this.state = "idle"
         this.firstupdate = true
-        this.frames = new FrameTracker(scale)
-        this.frames.add(this.size,"idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png",0.2)
-        this.frames.add(this.size, "running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png",0.25)
-        this.frames.add(this.size, "jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.25)
+        // this.frames = new FrameTracker(scale)
+        this.frames = new Frames()
+        this.frames.addAnimtion("idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png")
+        // this.frames.add(this.size,"idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png",0.2)
+        this.frames.addAnimtion("running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png")
+        // this.frames.add(this.size, "running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png",0.25)
+        this.frames.addAnimtion("jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png")
+        // this.frames.add(this.size, "jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.25)
+        
+        this.frames.addAnimtion("Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png")
+        this.frames.addAnimtion("Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png")
+        this.frames.addAnimtion("Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png")
 
-        this.frames.add(this.size,"Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png",0.2)
-        this.frames.add(this.size,"Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png",0.2)
-        this.frames.add(this.size,"Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png",0.2)
+
+        // this.frames.add(this.size,"Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png",0.2)
+        // this.frames.add(this.size,"Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png",0.2)
+        // this.frames.add(this.size,"Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png",0.2)
 
 
     }
@@ -451,10 +519,14 @@ Obstacle.prototype.speed = new Vector(-14,0)
 class Skelton extends Obstacle{
     constructor(speedVector,postionVector,state){
         super(speedVector,postionVector,state)
-        this.frames = new FrameTracker(scale)
+        this.frames = new Frames()
+        // this.frames = new FrameTracker(scale)
         console.log(this.size , "sizehere")
-        this.frames.add(this.size,"walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
-        this.frames.add(this.size,"attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Attack_3.png",0.1)
+        this.frames.addAnimtion("walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
+        this.frames.addAnimtion("attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Attack_3.png",0.1)
+
+        // this.frames.add("walking",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Walk.png",0.1)
+        // this.frames.add("attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Skeleton/Attack_3.png",0.1)
     }
     get type(){
         return"obstaclemid"
@@ -465,9 +537,10 @@ class Skelton extends Obstacle{
 class Sperm extends Obstacle{
     constructor(speedVector,postionVector,state){
         super(speedVector,postionVector,state)
-        this.frames = new FrameTracker(scale)
-        this.frames.add(this.size,"walking",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Walk.png",0.1)
-        this.frames.add(this.size,"attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Attack.png",0.1)
+        this.frames = new Frames()
+        // this.frames = new FrameTracker(scale)
+        this.frames.addAnimtion("walking",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Walk.png",0.1)
+        this.frames.addAnimtion("attack",7,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Fire_Spirit/Attack.png",0.1)
     }
 
     static create(postionVector){
@@ -479,9 +552,13 @@ class Sperm extends Obstacle{
 class Plent extends Obstacle{
     constructor(speedVector,postionVector,state){
         super(speedVector,postionVector,state)
-        this.frames = new FrameTracker(scale)
-        this.frames.add(this.size,"walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
-        this.frames.add(this.size,"attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
+        this.frames = new Frames()
+        // this.frames = new FrameTracker(scale)
+        this.frames.addAnimtion("walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
+        this.frames.addAnimtion("attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
+
+        // this.frames.add(this.size,"walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
+        // this.frames.add(this.size,"attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
     }
 
 
@@ -493,28 +570,28 @@ Skelton.prototype.size = new Vector(0.5,1)
 
 
 
-function createKeyframes(game) {
-    const container = document.querySelector('.container');
-    const containerWidth = width * scale
+// function createKeyframes(game) {
+//     const container = document.querySelector('.container');
+//     const containerWidth = width * scale
 
-    // Create a style element
-    const style = document.createElement('style');
-    style.type = 'text/css';
-    const keyframes = `
-                @keyframes gamebg {
-                    from {
-                        background-position: 0 bottom;
-                    }
-                    to {
-                        background-position: -${containerWidth}px bottom;
-                    }
-                }
-            `;
-            // Append the keyframes rule to the style element
-            style.innerHTML = keyframes;
-            // Append the style element to the document head
-            document.head.appendChild(style);
-        }
+//     // Create a style element
+//     const style = document.createElement('style');
+//     style.type = 'text/css';
+//     const keyframes = `
+//                 @keyframes gamebg {
+//                     from {
+//                         background-position: 0 bottom;
+//                     }
+//                     to {
+//                         background-position: -${containerWidth}px bottom;
+//                     }
+//                 }
+//             `;
+//             // Append the keyframes rule to the style element
+//             style.innerHTML = keyframes;
+//             // Append the style element to the document head
+//             document.head.appendChild(style);
+//         }
 
 
 
@@ -534,16 +611,16 @@ window.addEventListener("touchstart",()=>{
 })
 
 
-function respnosive(game,smouth){
-    if(smouth) game.olddisplay.frame.style.transition = "0.5s"
-    else game.olddisplay.frame.style.transition = ""
-    let scaleX = document.documentElement.clientWidth / (scale * width) 
-    game.olddisplay.changesizeframe(scaleX,scaleX)
-}
-window.addEventListener("resize",()=>{
-    respnosive(game,true)
+// function respnosive(game,smouth){
+//     if(smouth) game.olddisplay.frame.style.transition = "0.5s"
+//     else game.olddisplay.frame.style.transition = ""
+//     let scaleX = document.documentElement.clientWidth / (scale * width) 
+//     game.olddisplay.changesizeframe(scaleX,scaleX)
+// }
+// window.addEventListener("resize",()=>{
+//     respnosive(game,true)
 
-})
+// })
 
 
 // setInterval(()=>{

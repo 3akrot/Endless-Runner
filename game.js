@@ -1,11 +1,11 @@
 // game.js
-const gravitiy = 62;
+const gravitiy = 60;
 const jump = -25;
-const GroundLevel = 2
-const scale = 26;
-const drawingscale = `5`
+const GroundLevel = 1
+const scale = 20;
+const drawingscale = 6
 let width = 50;
-let height = 25;
+let height = 30;
 let bg;
 
 
@@ -18,71 +18,7 @@ Array.prototype.last = function(){
 }
 
 
-class FrameTracker {
-    constructor(scale){
-        this.scale = scale
-        this.frames={}
-        this.lastanimtion = null
-    }
 
-    add(actorsize,framesname,framesnumber,backgroundphoto,framesspeed){
-        if(!this.frames[framesname]){
-            this.frames[framesname] = { }        
-        }
-        this.frames[framesname] = {
-            backgroundphoto,
-            anmtionframes:this.generateFrames(actorsize,framesnumber,this.scale),
-            index:0,
-            framesspeed
-        }
-        console.log(actorsize,framesname,framesnumber,backgroundphoto,framesspeed)
-        console.log(backgroundphoto.slice(2))
-        if(!(Array.from(document.head.getElementsByTagName("link")).find((e)=> e.href == `${window.location}${backgroundphoto.slice(2)}`))){
-            let preload = document.createElement("link")
-            preload.href = `${window.location}${backgroundphoto.slice(2)}`
-            preload.rel = "preload"
-            preload.as = "image"
-            document.head.appendChild(preload)
-        }
-
-    }
-
-    generateFrames(actorsize,framesnumber,scale){
-        let res = []
-        for(let i = 0 ; i < framesnumber ; i++){
-            if(i==0)res.push([(actorsize.x - actorsize.y) * scale / 2,-0.2])
-            else res.push([res[i-1][0] - actorsize.x*2 * scale,-0.2])
-        }
-        return res
-    }
-
-    nextFrame(framesname){
-        let frame = this.frames[framesname].anmtionframes[Math.trunc(this.frames[framesname].index)]
-        this.frames[framesname].index = (this.frames[framesname].index + this.frames[framesname].framesspeed) % this.frames[framesname].anmtionframes.length
-        return frame
-    }
-
-    update(actorhtmlelement,animtionname,actor){
-        for(let animtion in this.frames){
-            if(this.frames[animtion].index != 0 && animtion != animtionname){
-                this.rest(animtion)
-            }
-        }
-        let frame = this.nextFrame(animtionname)
-        actorhtmlelement.style.backgroundImage = `url(${this.frames[animtionname].backgroundphoto})`
-        actorhtmlelement.style.backgroundSize = "cover"
-        actorhtmlelement.style.backgroundRepeat = "no-repeat"
-        actorhtmlelement.style.backgroundPosition = `${frame[0]}px ${frame[1]}px`
-        if(actor.type.indexOf("obstacle") !== -1)
-        actorhtmlelement.style.transform = `scale(${-drawingscale},${drawingscale})`
-
-    }
-
-    rest(framesname){
-        this.frames[framesname].index = 0
-    }
-
-}
 class Vector{
     constructor(x,y){
         this.x = x;
@@ -119,16 +55,7 @@ function randomrange(min,max){
 }
 
 
-function makeelment(tag,attrs,childeren = []){
-    let element = document.createElement(tag)
-    for(let key in attrs){
-        element.setAttribute(key,attrs[key])
-    }
-    for(let child of childeren){
-        element.appendChild(child)
-    }
-    return element
-}
+
 
 
 function trackkey(){
@@ -201,8 +128,7 @@ class Game {
         for(let i = 0 ; i < count ; i++){
             let distancebeteenobstacles = randomrange(this.width * 0.2,this.width * 2)
             let random = [Skelton,Sperm,Plent][Math.floor(Math.random() * 3)]
-            console.log(random,"errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-            this.obstacles.push(random.create(new Vector((this.width * 1.6)  +  distancebeteenobstacles * i,this.height)))
+            this.obstacles.push(random.create(new Vector((this.width * 1.6)  +  distancebeteenobstacles * i,this.height )))
         }
     }
     update(frametime,keys){
@@ -219,7 +145,7 @@ class Game {
 
     static newgame(highest){
 
-        return new Game(width,height,scale,"idle",new Player(new Vector(0,0),new Vector(2,height - Player.prototype.size.y  - GroundLevel),"onground"),Display,highest)
+        return new Game(width,height,scale,"idle",new Player(new Vector(0,0),new Vector(2,height - Player.prototype.size.y  - GroundLevel),"onground"),CavasDisplay,highest)
     }
 }
 
@@ -284,64 +210,28 @@ class GameRunner{
 }
 
 
-class Display{
-    constructor(game){
-        this.game = game
-        this.frametracker = new FrameTracker(game.scale)
-        this.actors = null
-        this.score = makeelment("div",{"class":"score"})
-        this.frame = makeelment("div",{"style":`width:${game.width * game.scale}px;height:${game.height * game.scale}px`,"class":`game`},[this.score])
-        document.body.appendChild(this.frame)
-    }
 
-    sync(newgame){
-        if(newgame.state != "lost")
-        bg = window.getComputedStyle(this.game.display.frame).backgroundPositionX
-        if(newgame.state == "lost")
-        this.game.display.frame.style.backgroundPositionX = bg 
-
-        this.frame.setAttribute("class",`game ${newgame.state }`)
-
-        if(this.actors) this.actors.remove()
-        this.score.textContent = `${this.game.highestscore ? `HI ${Math.trunc(this.game.highestscore)}` : ``} ${Math.trunc(newgame.score)}`
-        this.actors = makeelment("div",{},this.drawactors(newgame.obstacles.concat(newgame.player)))
-        this.frame.appendChild(this.actors)
-    }
-
-    clear(){
-        this.frame.remove()
-    }
-
-    drawactors(actors){
-        let actorselemtns = []
-        for(let actor of actors){
-            let element = makeelment("div",{"style":`top:${actor.postionVector.y * this.game.scale}px;left:${actor.postionVector.x * this.game.scale}px;width:${actor.size.x * this.game.scale}px;height:${actor.size.y * this.game.scale}px;transform:scale(${drawingscale})`,"class":`actor ${actor.type} ${actor.type == "player" ? actor.state : ""}`})
-            actorselemtns.push(element)
-            actor.frames.update(element,actor.state,actor)
-        }
-        return actorselemtns
-    }
-    changesizeframe(scaleX,scaleY){
-        //Xframewidrh = newwidth
-        //x = newwidth / frame
-        this.frame.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
-    }
-    
-}
 
 class Frames {
     constructor(){
         this.animtions = {}
+        
     }
-    addAnimtion(animtionName,FrameNumber,src){
-        this.animtions[animtionName] = {src,currentFrame:1,FrameNumber,width:128}
+    addAnimtion(animtionName,FrameNumber,src,speed){
+        this.animtions[animtionName] = {src,currentFrame:0,FrameNumber,width:128,speed,restFrames:undefined}
     }
     next(animtionName){
         let current = this.animtions[animtionName].currentFrame
-        this.animtions[animtionName].currentFrame = (current + 1) % this.animtions[animtionName].FrameNumber
+        this.animtions[animtionName].currentFrame = (current + (this.animtions[animtionName].speed || 0.3)) % this.animtions[animtionName].FrameNumber
+        clearTimeout(this.animtions[animtionName].restFrames)
+        this.animtions[animtionName].restFrames = setTimeout(()=>{
+            this.rest(animtionName)
+        },50)
+        console.log(this.animtions)
+
     }
     rest(animtionName){
-        this.animtions[animtionName].currentFrame = 1
+        this.animtions[animtionName].currentFrame = 0
     }
 }
 
@@ -353,6 +243,7 @@ class CavasDisplay {
     this.canves.height = game.height * scale;
     this.cx = this.canves.getContext("2d");  
     document.body.appendChild(this.canves);
+    
    }
    sync(newgame){
         this.cx.clearRect(0,0,this.canves.width,this.canves.height)
@@ -365,25 +256,46 @@ class CavasDisplay {
 
     }
    drawActor(actor){
-    this.cx.resetTransform()
-    let currentFrame = actor.frames.animtions[actor.state].currentFrame
+    let currentFrame = Math.floor(actor.frames.animtions[actor.state].currentFrame)
     let frameWidth = actor.frames.animtions[actor.state].width
     let src = actor.frames.animtions[actor.state].src
     let img = document.createElement("img")
     img.src = src
-    // this.cx.scale(2,2)
-    this.cx.fillRect(actor.postionVector.x * scale,actor.postionVector.y * scale,actor.size.x * scale,actor.size.y*scale)
-    // this.cx.drawImage(img,currentFrame * frameWidth ,0,frameWidth,128,actor.postionVector.x * scale, actor.postionVector.y * scale,actor.size.x * scale , actor.size.y * scale)
+    // this.cx.scale(2,2)]
+    this.cx.fillStyle = "black"
+    let x = (actor.postionVector.x * scale) -(( scale * drawingscale) * 0.5) + ((scale ) * 0.5)
+    let y =(actor.postionVector.y * scale) -((scale * drawingscale) * 0.5) + ((scale ) * 0.5)
+    // this.cx.fillRect(x,y, scale * drawingscale,  scale * drawingscale)
+
+    // this.cx.fillStyle = "red"
+
+    // this.cx.fillRect(actor.postionVector.x * scale , actor.postionVector.y * scale , actor.size.x * scale , actor.size.y * scale)
+
+    if(actor.type !== "player"){
+        this.cx.scale(-1,1)
+        this.cx.drawImage(img,currentFrame * frameWidth ,0,frameWidth,128,-x , y,-scale * drawingscale , scale * drawingscale)
+
+    }
+    else {
+        this.cx.drawImage(img,currentFrame * frameWidth ,0,frameWidth,128,x , y, scale * drawingscale , scale * drawingscale)
+    }
+    actor.frames.next(actor.state)
+    this.cx.resetTransform()
+
    }
    drawActors(actors){
     for(let actor of actors){
         this.drawActor(actor)
+
     }
     }
     changesizeframe(scaleX,scaleY){
         //Xframewidrh = newwidth
         //x = newwidth / frame
         // this.canves.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`
+    }
+    clear(){
+        this.canves.remove()
     }
 }
 
@@ -400,16 +312,16 @@ class Player{
         this.firstupdate = true
         // this.frames = new FrameTracker(scale)
         this.frames = new Frames()
-        this.frames.addAnimtion("idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png")
+        this.frames.addAnimtion("idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png",0.2)
         // this.frames.add(this.size,"idle",6,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Idle.png",0.2)
-        this.frames.addAnimtion("running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png")
+        this.frames.addAnimtion("running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png",0.25)
         // this.frames.add(this.size, "running",8,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Run.png",0.25)
-        this.frames.addAnimtion("jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png")
+        this.frames.addAnimtion("jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.25)
         // this.frames.add(this.size, "jumping",11,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Jump.png",0.25)
         
-        this.frames.addAnimtion("Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png")
-        this.frames.addAnimtion("Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png")
-        this.frames.addAnimtion("Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png")
+        this.frames.addAnimtion("Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png",0.2)
+        this.frames.addAnimtion("Attack_2",4,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_2.png",0.2)
+        this.frames.addAnimtion("Attack_3",7,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_3.png",0.2)
 
 
         // this.frames.add(this.size,"Attack_1",10,"./assets/craftpix-net-439247-free-fantasy-chibi-male-sprites-pixel-art/Wizard/Attack_1.png",0.2)
@@ -446,9 +358,9 @@ class Player{
             this.jumps = this.allowedjumps
         }
         // for cheaters
-        // else if(this.speedVector.y >= 0 && suggestjump){
-        //     this.speedVector.y = jump
-        // }
+        else if(this.speedVector.y >= 0 && suggestjump){
+            this.speedVector.y = jump
+        }
         else{
             if(!this.firstupdate)
             this.state = "running"
@@ -473,7 +385,8 @@ class Player{
 
     }
 }
-Player.prototype.size = new Vector(0.5,1)
+Player.prototype.size = new Vector(1,3)
+
 
 
 class Obstacle{
@@ -502,8 +415,9 @@ class Obstacle{
             let moveX = rounddecimat(this.speedVector.x * timeframe)
             this.postionVector.x = rounddecimat(this.postionVector.x + moveX)
         }
-         if(this.postionVector.x - 10 < game.player.postionVector.x  + game.player.size.x&& this.postionVector.y <= game.player.postionVector.y && game.player.postionVector.y + game.player.size.y <= this.postionVector.y + this.size.y){
+         if(this.postionVector.x -20  < game.player.postionVector.x  + game.player.size.x && this.postionVector.y <= game.player.postionVector.y && game.player.postionVector.y + game.player.size.y <= this.postionVector.y + this.size.y){
             this.state = "attack"
+            console.log("attacking the player")
             this.frames.rest("walking")
         }
     }
@@ -555,7 +469,7 @@ class Plent extends Obstacle{
         this.frames = new Frames()
         // this.frames = new FrameTracker(scale)
         this.frames.addAnimtion("walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
-        this.frames.addAnimtion("attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
+        this.frames.addAnimtion("attack",8,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_3.png",0.1)
 
         // this.frames.add(this.size,"walking",9,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Walk.png",0.1)
         // this.frames.add(this.size,"attack",6,"./assets/craftpix-net-339194-free-fantasy-enemies-pixel-art-sprite-pack/Plent/Attack_1.png",0.1)
@@ -563,10 +477,14 @@ class Plent extends Obstacle{
 
 
 }
-Sperm.prototype.size = new Vector(0.8,1.6)
-Plent.prototype.size = new Vector(0.5,1)
+Sperm.prototype.size = new Vector(3,1)
 
-Skelton.prototype.size = new Vector(0.5,1)
+Plent.prototype.size = new Vector(1,3)
+Plent.prototype.Drawsize = new Vector(4,4)
+
+Skelton.prototype.size = new Vector(1,3)
+Skelton.prototype.Drawsize = new Vector(4,4)
+
 
 
 

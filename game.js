@@ -1,9 +1,8 @@
 // game.js
 const gravitiy = 60;
 const jump = -25;
-const GroundLevel = 1
+const GroundLevel = 5
 const scale = 20;
-const drawingscale = 6
 let width = 50;
 let height = 30;
 let bg;
@@ -59,6 +58,7 @@ function randomrange(min,max){
 
 
 function trackkey(){
+    
     const keys = {
         "arrowup":false
     }
@@ -72,7 +72,7 @@ function trackkey(){
                 setTimeout(()=>{
                     keys["space"] = false;
 
-                },800)
+                },600)
                 e.preventDefault()
             }
         
@@ -145,7 +145,7 @@ class Game {
 
     static newgame(highest){
 
-        return new Game(width,height,scale,"idle",new Player(new Vector(0,0),new Vector(2,height - Player.prototype.size.y  - GroundLevel),"onground"),CavasDisplay,highest)
+        return new Game(width,height,scale,"idle",new Player(new Vector(0,0),new Vector(2,height - Player.prototype.size.y  - GroundLevel ),"onground"),CavasDisplay,highest)
     }
 }
 
@@ -247,6 +247,7 @@ class CavasDisplay {
    }
    sync(newgame){
         this.cx.clearRect(0,0,this.canves.width,this.canves.height)
+        
         this.drawActors(newgame.obstacles.concat(newgame.player))
         this.drawScore(newgame)
     }
@@ -260,16 +261,17 @@ class CavasDisplay {
     let frameWidth = actor.frames.animtions[actor.state].width
     let src = actor.frames.animtions[actor.state].src
     let img = document.createElement("img")
+    let drawingscale = actor.Drawsize
     img.src = src
     // this.cx.scale(2,2)]
     this.cx.fillStyle = "black"
     let x = (actor.postionVector.x * scale) -(( scale * drawingscale) * 0.5) + ((scale ) * 0.5)
     let y =(actor.postionVector.y * scale) -((scale * drawingscale) * 0.5) + ((scale ) * 0.5)
-    // this.cx.fillRect(x,y, scale * drawingscale,  scale * drawingscale)
+    this.cx.fillRect(x,y, scale * drawingscale,  scale * drawingscale)
 
-    // this.cx.fillStyle = "red"
+    this.cx.fillStyle = "red"
 
-    // this.cx.fillRect(actor.postionVector.x * scale , actor.postionVector.y * scale , actor.size.x * scale , actor.size.y * scale)
+    this.cx.fillRect(actor.postionVector.x * scale , actor.postionVector.y * scale , actor.size.x * scale , actor.size.y * scale)
 
     if(actor.type !== "player"){
         this.cx.scale(-1,1)
@@ -477,13 +479,14 @@ class Plent extends Obstacle{
 
 
 }
-Sperm.prototype.size = new Vector(3,1)
-
+Player.prototype.Drawsize = 5
+Sperm.prototype.size = new Vector(2,1)
+Sperm.prototype.Drawsize = 5
 Plent.prototype.size = new Vector(1,3)
-Plent.prototype.Drawsize = new Vector(4,4)
+Plent.prototype.Drawsize = 5
 
 Skelton.prototype.size = new Vector(1,3)
-Skelton.prototype.Drawsize = new Vector(4,4)
+Skelton.prototype.Drawsize = 5
 
 
 
